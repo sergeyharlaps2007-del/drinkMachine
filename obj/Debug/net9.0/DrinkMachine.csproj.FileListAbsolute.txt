@@ -1,0 +1,15 @@
+C:\project\DrinkMachine\bin\Debug\net9.0\DrinkMachine.exe
+C:\project\DrinkMachine\bin\Debug\net9.0\DrinkMachine.deps.json
+C:\project\DrinkMachine\bin\Debug\net9.0\DrinkMachine.runtimeconfig.json
+C:\project\DrinkMachine\bin\Debug\net9.0\DrinkMachine.dll
+C:\project\DrinkMachine\bin\Debug\net9.0\DrinkMachine.pdb
+C:\project\DrinkMachine\obj\Debug\net9.0\DrinkMachine.GeneratedMSBuildEditorConfig.editorconfig
+C:\project\DrinkMachine\obj\Debug\net9.0\DrinkMachine.AssemblyInfoInputs.cache
+C:\project\DrinkMachine\obj\Debug\net9.0\DrinkMachine.AssemblyInfo.cs
+C:\project\DrinkMachine\obj\Debug\net9.0\DrinkMachine.csproj.CoreCompileInputs.cache
+C:\project\DrinkMachine\obj\Debug\net9.0\DrinkMachine.dll
+C:\project\DrinkMachine\obj\Debug\net9.0\refint\DrinkMachine.dll
+C:\project\DrinkMachine\obj\Debug\net9.0\DrinkMachine.pdb
+C:\project\DrinkMachine\obj\Debug\net9.0\DrinkMachine.genruntimeconfig.cache
+C:\project\DrinkMachine\obj\Debug\net9.0\ref\DrinkMachine.dll
+C:\project\DrinkMachine\obj\Debug\net9.0\DrinkMachine.sourcelink.json

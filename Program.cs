@@ -42,14 +42,15 @@ namespace Project
 
             while (true)
             {
+                // Показываем меню
                 Console.WriteLine("\nМеню напитков:\n");
                 for (int i = 0; i < drinks.Count; i++)
                     Console.WriteLine($"{i + 1}. {drinks[i].Name,-10} - {drinks[i].Price} тг");
 
                 Console.Write("\nВыберите напиток (1-3): ");
-                string input = Console.ReadLine() ?? "";
+                string input = (Console.ReadLine() ?? "").Trim();
 
-                if (!int.TryParse(input.Trim(), out int choice) || choice < 1 || choice > drinks.Count)
+                if (!int.TryParse(input, out int choice) || choice < 1 || choice > drinks.Count)
                 {
                     Console.WriteLine("Ошибка: неверный выбор напитка!");
                     continue;
@@ -58,9 +59,10 @@ namespace Project
                 Drink selectedDrink = drinks[choice - 1];
                 Console.WriteLine($"\nВы выбрали: {selectedDrink.Name} — {selectedDrink.Price} тг");
 
+                // Ввод денег
                 Console.Write("Введите сумму оплаты: ");
-                string moneyInput = Console.ReadLine() ?? "";
-                if (!int.TryParse(moneyInput.Trim(), out int money) || money <= 0)
+                string moneyInput = (Console.ReadLine() ?? "").Trim();
+                if (!int.TryParse(moneyInput, out int money) || money <= 0)
                 {
                     Console.WriteLine("Ошибка: неверная сумма!");
                     continue;
@@ -72,44 +74,44 @@ namespace Project
                     continue;
                 }
 
-                int change = money - selectedDrink.Price;
+                int changeAmount = money - selectedDrink.Price;
 
-                if (change == 0)
+                if (changeAmount == 0)
                 {
                     Console.WriteLine("\nСпасибо за покупку! Сдачи нет.");
                 }
                 else
                 {
-                    var result = GetChange(change, cashStorage);
-                    if (result == null)
+                    var change = GetChangeBalanced(changeAmount, cashStorage);
+
+                    if (change == null)
                     {
                         Console.WriteLine("\nНевозможно выдать сдачу доступными купюрами!");
                     }
                     else
                     {
-                        Console.WriteLine($"\nВаша сдача: {change} тг");
+                        Console.WriteLine($"\nВаша сдача: {changeAmount} тг");
                         Console.WriteLine("Выдано:");
-                        foreach (var kvp in result)
+
+                        // Сортируем по возрастанию для аккуратного вывода
+                        foreach (var kvp in change.OrderBy(x => x.Key))
                         {
                             Console.WriteLine($"  {kvp.Key} тг × {kvp.Value}");
-                            cashStorage[kvp.Key] -= kvp.Value;
                         }
                     }
-                    Console.WriteLine("\nСпасибо за покупку!");
                 }
 
-                // хочет ли пользователь купить ещё
-                Console.Write("\nХотите купить ещё? (да/нет): ");
+                // Спросить, хочет ли пользователь купить ещё
+                Console.Write("\nХотите купить ещё? (da/net): ");
                 string again = (Console.ReadLine() ?? "").Trim().ToLower();
 
                 if (again == "нет" || again == "net")
                 {
                     Console.WriteLine("\nСпасибо, что воспользовались автоматом!");
-                    return; // Завершение программы
+                    return;
                 }
                 else if (again == "да" || again == "da")
                 {
-                
                     continue;
                 }
                 else
@@ -120,30 +122,46 @@ namespace Project
             }
         }
 
-        static Dictionary<int, int>? GetChange(int change, Dictionary<int, int> storage)
+        // Метод выдачи равномерной сдачи
+        static Dictionary<int, int>? GetChangeBalanced(int change, Dictionary<int, int> storage)
         {
-            var available = storage.OrderByDescending(x => x.Key);
             Dictionary<int, int> result = new Dictionary<int, int>();
             int remaining = change;
 
-            foreach (var item in available)
+            // Перемешиваем номиналы случайно для равномерного распределения
+            var denominations = storage.Keys.OrderBy(x => Guid.NewGuid()).ToList();
+
+            // Локальная копия хранилища, чтобы не уменьшать реальные купюры пока не выдаем
+            Dictionary<int, int> tempStorage = new Dictionary<int, int>(storage);
+
+            while (remaining > 0)
             {
-                int denom = item.Key;
-                int availableCount = item.Value;
+                bool gave = false;
 
-                int needed = remaining / denom;
-                int used = Math.Min(needed, availableCount);
-
-                if (used > 0)
+                foreach (var denom in denominations)
                 {
-                    result[denom] = used;
-                    remaining -= used * denom;
+                    if (tempStorage[denom] > 0 && remaining >= denom)
+                    {
+                        result.TryGetValue(denom, out int count);
+                        result[denom] = count + 1;
+                        tempStorage[denom]--;
+                        remaining -= denom;
+                        gave = true;
+                    }
                 }
 
-                if (remaining == 0) break;
+                if (!gave)
+                {
+                    // Если на этом шаге не смогли выдать ни одну купюру — сдача невозможна
+                    return null;
+                }
             }
-//tesno
-            if (remaining > 0) return null;
+
+            // Сдача успешно рассчитана, уменьшаем реальные купюры
+            foreach (var kvp in result)
+            {
+                storage[kvp.Key] -= kvp.Value;
+            }
 
             return result;
         }
